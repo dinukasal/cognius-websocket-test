@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Socket.io simple chat</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="inbox">
+            <div class="inbox__people">
+                <h4>Active users</h4>
+            </div>
+            <div class="inbox__messages">
+                <div class="messages__history" id="messages"></div>
+                <div class="fallback"></div>
+            </div>
+        </div>
+
+        <form class="message_form">
+            <input type="text" class="message_form__input" placeholder="Type a message" />
+            <button class="message_form__button" type="submit">
+                Enter
+            </button>
+        </form>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+    <script>
+        var botId = 1456465445;
+        var sessionId = 54654544;
+
+        var socket = io("http://localhost:3004", {
+            'reconnection': true,
+            'reconnectionDelay': 1000,
+            'reconnectionDelayMax': 5000,
+            'reconnectionAttempts': 3,
+            timeout: 5000,
+            // transports: ['websocket'],
+            upgrade: false
+        });
+
+        socket.emit('session_init', { botId, sessionId });
+        socket.on('session_init_status', function (data) {
+            console.log('session_init_status', data)
+        });
+        socket.on('session_terminate_status', function (data) {
+            console.log('session_terminate_status', data)
+        });
+
+        socket.on('stream_bot', function (data) {
+            console.log(data);
+        });
+        socket.on('error', console.error.bind(console));
+        socket.on('message', console.log.bind(console));
+
+        setTimeout(() => {
+            socket.emit("session_terminate", { botId, sessionId });
+
+        }, 10000);
+
+        // socket.emit('textData', { botId, sessionId, data: 'hello', commands: [''] });
+
+
+    </script>
+</body>
+
+</html>
